@@ -4,9 +4,7 @@
 
 ## Results
 
-I only implemented the q-learning for `StochasticMDPEnv`.
-
-I plan to implement `hierarchical-DQN` in the near future.
+I only implemented the q-learning for `StochasticMDPEnv` and plan to implement `hierarchical-DQN` in the near future.
 
 ### Q-Learning for Experiment 1 (Discrete stochastic decision process)
 
@@ -16,4 +14,4 @@ I plan to implement `hierarchical-DQN` in the near future.
 
 ## Reference
 
-<https://github.com/EthanMacdonald/h-DQN> Another implementation of `hierarchical-DQN` paper, which I copied the `StochasticMDPEnv` from.
+<https://github.com/EthanMacdonald/h-DQN>: Another implementation of `hierarchical-DQN` paper, which I copied the `StochasticMDPEnv` from.
