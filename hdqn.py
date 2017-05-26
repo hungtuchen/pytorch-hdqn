@@ -57,6 +57,7 @@ def hdqn_learning(
         episode_rewards=np.zeros(num_episodes))
     n_thousand_episode = int(np.floor(num_episodes / 1000))
     visits = np.zeros((n_thousand_episode, env.nS))
+    total_timestep = 0
     meta_timestep = 0
     ctrl_timestep = defaultdict(int)
 
@@ -71,17 +72,18 @@ def hdqn_learning(
             while not done:
                 meta_timestep += 1
                 # Get annealing exploration rate (epislon) from exploration_schedule
-                meta_epsilon = exploration_schedule.value(meta_timestep)
+                meta_epsilon = exploration_schedule.value(total_timestep)
                 goal = agent.select_goal(encoded_current_state, meta_epsilon)[0, 0]
                 encoded_goal = one_hot(goal)
 
                 total_extrinsic_reward = 0
                 goal_reached = False
                 while not done and not goal_reached:
+                    total_timestep += 1
                     episode_length += 1
                     ctrl_timestep[goal] += 1
                     # Get annealing exploration rate (epislon) from exploration_schedule
-                    ctrl_epsilon = exploration_schedule.value(ctrl_timestep[goal])
+                    ctrl_epsilon = exploration_schedule.value(total_timestep)
                     joint_state_goal = np.concatenate([encoded_current_state, encoded_goal], axis=1)
                     action = agent.select_action(joint_state_goal, ctrl_epsilon)[0, 0]
                     ### Step the env and store the transition
@@ -98,10 +100,10 @@ def hdqn_learning(
                     joint_next_state_goal = np.concatenate([encoded_next_state, encoded_goal], axis=1)
                     agent.ctrl_replay_memory.push(joint_state_goal, action, joint_next_state_goal, intrinsic_reward, done)
                     # Update Both meta-controller and controller
-                    agent.update_meta_controller()
+                    agent.update_meta_controller(gamma)
                     agent.update_controller(gamma)
 
-                    total_extrinsic_reward += gamma * extrinsic_reward
+                    total_extrinsic_reward += extrinsic_reward
                     current_state = next_state
                     encoded_current_state = encoded_next_state
                 # Goal Finished
