@@ -108,7 +108,7 @@ class hDQN():
             # Use volatile = True if variable is only used in inference mode, i.e. don’t save the history
             return self.meta_controller(Variable(state, volatile=True)).data.max(1)[1].cpu()
         else:
-            return torch.IntTensor([[random.randrange(self.num_goal)]])
+            return torch.IntTensor([random.randrange(self.num_goal)])
 
     def select_action(self, joint_state_goal, epilson):
         sample = random.random()
@@ -117,7 +117,7 @@ class hDQN():
             # Use volatile = True if variable is only used in inference mode, i.e. don’t save the history
             return self.controller(Variable(joint_state_goal, volatile=True)).data.max(1)[1].cpu()
         else:
-            return torch.IntTensor([[random.randrange(self.num_action)]])
+            return torch.IntTensor([random.randrange(self.num_action)])
 
     def update_meta_controller(self, gamma=1.0):
         if len(self.meta_replay_memory) < self.batch_size:

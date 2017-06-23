@@ -73,7 +73,7 @@ def hdqn_learning(
                 meta_timestep += 1
                 # Get annealing exploration rate (epislon) from exploration_schedule
                 meta_epsilon = exploration_schedule.value(total_timestep)
-                goal = agent.select_goal(encoded_current_state, meta_epsilon)[0, 0]
+                goal = agent.select_goal(encoded_current_state, meta_epsilon)[0]
                 encoded_goal = one_hot(goal)
 
                 total_extrinsic_reward = 0
@@ -85,7 +85,7 @@ def hdqn_learning(
                     # Get annealing exploration rate (epislon) from exploration_schedule
                     ctrl_epsilon = exploration_schedule.value(total_timestep)
                     joint_state_goal = np.concatenate([encoded_current_state, encoded_goal], axis=1)
-                    action = agent.select_action(joint_state_goal, ctrl_epsilon)[0, 0]
+                    action = agent.select_action(joint_state_goal, ctrl_epsilon)[0]
                     ### Step the env and store the transition
                     next_state, extrinsic_reward, done, _ = env.step(action)
                     # Update statistics
