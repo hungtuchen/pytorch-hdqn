@@ -20,9 +20,14 @@ class Variable(autograd.Variable):
             data = data.cuda()
         super(Variable, self).__init__(data, *args, **kwargs)
 
-def one_hot(state):
+def one_hot_state(state):
     vector = np.zeros(6)
     vector[state-1] = 1.0
+    return np.expand_dims(vector, axis=0)
+
+def one_hot_goal(goal):
+    vector = np.zeros(6)
+    vector[goal-1] = 1.0
     return np.expand_dims(vector, axis=0)
 
 def hdqn_learning(
@@ -66,7 +71,7 @@ def hdqn_learning(
             episode_length = 0
             current_state = env.reset()
             visits[i_thousand_episode][current_state-1] += 1
-            encoded_current_state = one_hot(current_state)
+            encoded_current_state = one_hot_state(current_state)
 
             done = False
             while not done:
@@ -74,7 +79,7 @@ def hdqn_learning(
                 # Get annealing exploration rate (epislon) from exploration_schedule
                 meta_epsilon = exploration_schedule.value(total_timestep)
                 goal = agent.select_goal(encoded_current_state, meta_epsilon)[0]
-                encoded_goal = one_hot(goal)
+                encoded_goal = one_hot_goal(goal)
 
                 total_extrinsic_reward = 0
                 goal_reached = False
@@ -93,7 +98,7 @@ def hdqn_learning(
                     stats.episode_lengths[i_thousand_episode*1000 + i_episode] = episode_length
                     visits[i_thousand_episode][next_state-1] += 1
 
-                    encoded_next_state = one_hot(next_state)
+                    encoded_next_state = one_hot_state(next_state)
                     intrinsic_reward = agent.get_intrinsic_reward(goal, next_state)
                     goal_reached = next_state == goal
 
